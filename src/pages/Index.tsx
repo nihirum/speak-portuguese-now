@@ -1,6 +1,7 @@
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
+import PortugueseWordsSection from "@/components/PortugueseWordsSection";
 import BenefitsSection from "@/components/BenefitsSection";
 import HowItWorksSection from "@/components/HowItWorksSection";
 import PlansSection from "@/components/PlansSection";
@@ -14,6 +15,7 @@ export default function Index() {
     <LanguageProvider>
       <Navbar />
       <HeroSection />
+      <PortugueseWordsSection />
       <BenefitsSection />
       <HowItWorksSection />
       <PlansSection />
