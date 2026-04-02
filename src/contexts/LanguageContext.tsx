@@ -92,6 +92,43 @@ const translations = {
       { text: { es: "Excelente relación calidad-precio. El mejor curso de portugués que he tomado.", en: "Excellent value for money. The best Portuguese course I've taken." }, name: "Ana L.", location: { es: "Bogotá, Colombia", en: "Bogotá, Colombia" } },
     ],
   },
+  faq: {
+    title: { es: "Preguntas Frecuentes", en: "Frequently Asked Questions" },
+    items: [
+      {
+        q: { es: "¿Necesito saber algo de portugués para empezar?", en: "Do I need to know any Portuguese to start?" },
+        a: { es: "¡Para nada! Nuestras clases están diseñadas para todos los niveles, incluso si nunca has estudiado portugués. Empezamos desde cero y avanzamos a tu ritmo.", en: "Not at all! Our classes are designed for all levels, even if you've never studied Portuguese. We start from scratch and progress at your pace." },
+      },
+      {
+        q: { es: "¿Cuánto dura cada clase?", en: "How long is each class?" },
+        a: { es: "Cada clase tiene una duración de 1 hora. Es el tiempo ideal para aprender sin saturarte y mantener la concentración.", en: "Each class lasts 1 hour. It's the ideal amount of time to learn without burnout and maintain focus." },
+      },
+      {
+        q: { es: "¿Las clases son individuales o en grupo?", en: "Are classes individual or group?" },
+        a: { es: "Ofrecemos clases individuales y también planes para parejas. Así garantizamos atención personalizada y un avance más rápido.", en: "We offer individual classes and also couple plans. This ensures personalized attention and faster progress." },
+      },
+      {
+        q: { es: "¿Qué plataforma usan para las clases?", en: "What platform do you use for classes?" },
+        a: { es: "Usamos Zoom o Google Meet, lo que te resulte más cómodo. Solo necesitas una conexión a internet estable y ganas de aprender.", en: "We use Zoom or Google Meet, whichever is more convenient for you. You just need a stable internet connection and a willingness to learn." },
+      },
+      {
+        q: { es: "¿Puedo cambiar de plan después de empezar?", en: "Can I change my plan after starting?" },
+        a: { es: "¡Claro! Puedes escalar a un plan superior en cualquier momento. El saldo restante de tu plan actual se aplica al nuevo.", en: "Of course! You can upgrade to a higher plan at any time. Your remaining balance is applied to the new plan." },
+      },
+      {
+        q: { es: "¿Enseñan portugués de Portugal o de Brasil?", en: "Do you teach European or Brazilian Portuguese?" },
+        a: { es: "Enseñamos ambas variantes. Al inicio definimos contigo cuál prefieres según tus objetivos (vivir en Portugal, trabajar en Brasil, etc.).", en: "We teach both variants. At the beginning, we define with you which one you prefer based on your goals (living in Portugal, working in Brazil, etc.)." },
+      },
+      {
+        q: { es: "¿Cómo hago el pago?", en: "How do I make the payment?" },
+        a: { es: "Aceptamos transferencias bancarias, PayPal y otros métodos. Te damos todos los detalles al contactarnos por WhatsApp.", en: "We accept bank transfers, PayPal, and other methods. We'll give you all the details when you contact us on WhatsApp." },
+      },
+      {
+        q: { es: "¿En cuánto tiempo veré resultados?", en: "How soon will I see results?" },
+        a: { es: "Desde la primera clase estarás hablando portugués. En 2-3 semanas notarás un avance significativo en tu comprensión y fluidez.", en: "From the first class you'll be speaking Portuguese. In 2-3 weeks you'll notice significant improvement in your comprehension and fluency." },
+      },
+    ],
+  },
   ctaFinal: {
     title: { es: "Empieza hoy a hablar portugués", en: "Start speaking Portuguese today" },
     subtitle: { es: "No esperes más. Tu primera clase puede ser mañana.", en: "Don't wait any longer. Your first class could be tomorrow." },
