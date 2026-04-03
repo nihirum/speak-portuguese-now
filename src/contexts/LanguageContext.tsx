@@ -40,8 +40,8 @@ const translations = {
       {
         title: { es: "Portugués real, no de libro", en: "Real Portuguese, not textbook" },
         desc: {
-          es: "Aprende el portugués que realmente se habla en Portugal y Brasil.",
-          en: "Learn the Portuguese that's actually spoken in Portugal and Brazil.",
+          es: "Aprende el portugués que realmente se habla en Portugal.",
+          en: "Learn the Portuguese that's actually spoken in Portugal.",
         },
         icon: "🇵🇹",
       },
