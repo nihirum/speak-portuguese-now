@@ -11,6 +11,7 @@ import CtaFinalSection from "@/components/CtaFinalSection";
 import Footer from "@/components/Footer";
 import FloatingButtons from "@/components/FloatingButtons";
 
+// Main landing page
 export default function Index() {
   return (
     <LanguageProvider>
