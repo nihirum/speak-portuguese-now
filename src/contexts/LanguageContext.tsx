@@ -90,6 +90,11 @@ const translations = {
       { text: { es: "En pocas semanas ya podía mantener conversaciones básicas. ¡Increíble método!", en: "In just a few weeks I could hold basic conversations. Incredible method!" }, name: "María G.", location: { es: "Madrid, España", en: "Madrid, Spain" } },
       { text: { es: "Las clases son súper dinámicas y personalizadas. Me encanta aprender así.", en: "The classes are super dynamic and personalized. I love learning this way." }, name: "Carlos R.", location: { es: "CDMX, México", en: "CDMX, Mexico" } },
       { text: { es: "Excelente relación calidad-precio. El mejor curso de portugués que he tomado.", en: "Excellent value for money. The best Portuguese course I've taken." }, name: "Ana L.", location: { es: "Bogotá, Colombia", en: "Bogotá, Colombia" } },
+      { text: { es: "Me mudé a Lisboa y necesitaba aprender rápido. En un mes ya me defendía en el día a día.", en: "I moved to Lisbon and needed to learn fast. In a month I could manage day-to-day situations." }, name: "Diego M.", location: { es: "Buenos Aires, Argentina", en: "Buenos Aires, Argentina" } },
+      { text: { es: "Lo mejor es que desde la primera clase empiezas a hablar. Nada de gramática aburrida.", en: "The best part is you start speaking from the first class. No boring grammar drills." }, name: "Laura S.", location: { es: "Lima, Perú", en: "Lima, Peru" } },
+      { text: { es: "Probé varias academias antes y ninguna se compara. El trato es muy cercano y profesional.", en: "I tried several academies before and none compare. The service is very close and professional." }, name: "Javier P.", location: { es: "Santiago, Chile", en: "Santiago, Chile" } },
+      { text: { es: "Mi empresa me pidió aprender portugués y gracias a PTAULAS lo logré en tiempo récord.", en: "My company asked me to learn Portuguese and thanks to PTAULAS I achieved it in record time." }, name: "Sofía R.", location: { es: "Quito, Ecuador", en: "Quito, Ecuador" } },
+      { text: { es: "Las clases se adaptan completamente a mi horario. Muy flexible y cómodo.", en: "Classes adapt completely to my schedule. Very flexible and convenient." }, name: "Pedro V.", location: { es: "Caracas, Venezuela", en: "Caracas, Venezuela" } },
     ],
   },
   faq: {
