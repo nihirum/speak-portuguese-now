@@ -40,8 +40,8 @@ const translations = {
       {
         title: { es: "Portugués real, no de libro", en: "Real Portuguese, not textbook" },
         desc: {
-          es: "Aprende el portugués que realmente se habla en Portugal y Brasil.",
-          en: "Learn the Portuguese that's actually spoken in Portugal and Brazil.",
+          es: "Aprende el portugués que realmente se habla en Portugal.",
+          en: "Learn the Portuguese that's actually spoken in Portugal.",
         },
         icon: "🇵🇹",
       },
@@ -116,8 +116,8 @@ const translations = {
         a: { es: "¡Claro! Puedes escalar a un plan superior en cualquier momento. El saldo restante de tu plan actual se aplica al nuevo.", en: "Of course! You can upgrade to a higher plan at any time. Your remaining balance is applied to the new plan." },
       },
       {
-        q: { es: "¿Enseñan portugués de Portugal o de Brasil?", en: "Do you teach European or Brazilian Portuguese?" },
-        a: { es: "Enseñamos ambas variantes. Al inicio definimos contigo cuál prefieres según tus objetivos (vivir en Portugal, trabajar en Brasil, etc.).", en: "We teach both variants. At the beginning, we define with you which one you prefer based on your goals (living in Portugal, working in Brazil, etc.)." },
+        q: { es: "¿Qué variante de portugués enseñan?", en: "Which variant of Portuguese do you teach?" },
+        a: { es: "Enseñamos portugués europeo (de Portugal). Nuestro enfoque es el portugués que se habla en Lisboa, Oporto y todo Portugal.", en: "We teach European Portuguese (from Portugal). Our focus is the Portuguese spoken in Lisbon, Porto, and throughout Portugal." },
       },
       {
         q: { es: "¿Cómo hago el pago?", en: "How do I make the payment?" },

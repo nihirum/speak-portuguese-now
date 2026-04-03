@@ -14,7 +14,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ["Luckiest Guy", "Nunito", "cursive"],
+        display: ["Nunito", "sans-serif"],
         body: ["Quicksand", "sans-serif"],
       },
       colors: {
