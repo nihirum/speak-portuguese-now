@@ -27,7 +27,7 @@ export default function Navbar() {
       <div className="container flex items-center justify-between h-16">
         <a href="#inicio" className="flex items-center gap-2">
           <img src={logo} alt="PTAULAS logo" className="h-10 w-10 rounded-full object-cover" />
-          <span className="font-display font-bold text-lg tracking-wide text-primary uppercase">
+          <span className="font-bold text-lg tracking-widest text-primary uppercase" style={{ fontFamily: "'Montserrat', sans-serif" }}>
             PTAULAS
           </span>
         </a>
