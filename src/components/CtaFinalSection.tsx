@@ -41,7 +41,8 @@ export default function CtaFinalSection() {
     try {
       const res = await fetch(WEBHOOK_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain" },
         body: JSON.stringify({
           firstName,
           lastName,
@@ -49,8 +50,6 @@ export default function CtaFinalSection() {
           whatsapp: `${countryCode}${phone.replace(/\D/g, "")}`,
         }),
       });
-
-      if (!res.ok) throw new Error("webhook error");
 
       toast.success(f.success[lang]);
       setFirstName("");
