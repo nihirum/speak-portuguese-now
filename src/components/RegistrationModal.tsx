@@ -50,9 +50,10 @@ export default function RegistrationModal({ open, onClose }: Props) {
     e.preventDefault();
     setSending(true);
     try {
-      const res = await fetch(WEBHOOK_URL, {
+      await fetch(WEBHOOK_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain" },
         body: JSON.stringify({
           firstName,
           lastName,
@@ -60,7 +61,7 @@ export default function RegistrationModal({ open, onClose }: Props) {
           whatsapp: `${countryCode}${phone.replace(/\D/g, "")}`,
         }),
       });
-      if (!res.ok) throw new Error("webhook error");
+      // no-cors returns opaque response (status 0), so we trust it was sent
       toast.success(f.success[lang]);
       reset();
       onClose();
