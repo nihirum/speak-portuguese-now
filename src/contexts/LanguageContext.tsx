@@ -138,6 +138,16 @@ const translations = {
     title: { es: "Empieza hoy a hablar portugués", en: "Start speaking Portuguese today" },
     subtitle: { es: "No esperes más. Tu primera clase puede ser mañana.", en: "Don't wait any longer. Your first class could be tomorrow." },
     cta: { es: "Hablar por WhatsApp", en: "Chat on WhatsApp" },
+    form: {
+      firstName: { es: "Nombre", en: "First name" },
+      lastName: { es: "Apellido", en: "Last name" },
+      email: { es: "Email", en: "Email" },
+      whatsapp: { es: "WhatsApp (con código de país)", en: "WhatsApp (with country code)" },
+      submit: { es: "Inscríbete ahora", en: "Sign up now" },
+      sending: { es: "Enviando...", en: "Sending..." },
+      success: { es: "¡Registro exitoso! Te contactaremos por WhatsApp", en: "Registration successful! We'll contact you via WhatsApp" },
+      error: { es: "Hubo un error. Inténtalo de nuevo.", en: "Something went wrong. Please try again." },
+    },
   },
   footer: {
     text: { es: "Clases de portugués online personalizadas", en: "Personalized online Portuguese classes" },
