@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import mascotPorto from "@/assets/mascot-porto.jpg";
 
-const WEBHOOK_URL = "https://hook.us2.make.com/os7227kuroxya9f5h31gbxjotpmqbydj";
+const WEBHOOK_URL = "https://hook.us2.make.com/nhs0phk6efpoy302rjl4bmh3zu7t3jso";
 
 const COUNTRY_CODES = [
   { code: "+1", label: "🇺🇸 +1" },
