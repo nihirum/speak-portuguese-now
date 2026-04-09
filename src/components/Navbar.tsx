@@ -3,9 +3,9 @@ import { useLang } from "@/contexts/LanguageContext";
 import { Menu, X } from "lucide-react";
 import logo from "@/assets/logo-ptaulas.png";
 
-const WHATSAPP_URL = "https://wa.me/XXXXXXXX?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20las%20clases%20de%20portugu%C3%A9s";
+interface Props { onCtaClick: () => void; }
 
-export default function Navbar() {
+export default function Navbar({ onCtaClick }: Props) {
   const { lang, t } = useLang();
   const [open, setOpen] = useState(false);
 
@@ -32,25 +32,22 @@ export default function Navbar() {
           </span>
         </a>
 
-        {/* Desktop */}
         <div className="hidden md:flex items-center gap-6">
           {links.map((l) => (
             <button key={l.href} onClick={() => scrollTo(l.href)} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
               {l.label}
             </button>
           ))}
-          <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="bg-primary text-primary-foreground px-5 py-2 rounded-full text-sm font-bold hover:opacity-90 transition-opacity">
-            WhatsApp
-          </a>
+          <button onClick={onCtaClick} className="bg-primary text-primary-foreground px-5 py-2 rounded-full text-sm font-bold hover:opacity-90 transition-opacity">
+            {t.hero.cta[lang]}
+          </button>
         </div>
 
-        {/* Mobile toggle */}
         <button className="md:hidden text-foreground" onClick={() => setOpen(!open)}>
           {open ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
-      {/* Mobile menu */}
       {open && (
         <div className="md:hidden bg-background border-b border-border px-6 pb-4 space-y-3">
           {links.map((l) => (
@@ -58,9 +55,9 @@ export default function Navbar() {
               {l.label}
             </button>
           ))}
-          <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="block bg-primary text-primary-foreground text-center px-5 py-2 rounded-full text-sm font-bold">
-            WhatsApp
-          </a>
+          <button onClick={() => { setOpen(false); onCtaClick(); }} className="block w-full bg-primary text-primary-foreground text-center px-5 py-2 rounded-full text-sm font-bold">
+            {t.hero.cta[lang]}
+          </button>
         </div>
       )}
     </nav>
