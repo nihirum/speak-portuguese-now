@@ -2,11 +2,11 @@ import { useLang } from "@/contexts/LanguageContext";
 import { motion } from "framer-motion";
 import { MessageCircle, BarChart3, Rocket } from "lucide-react";
 
-const WHATSAPP_URL = "https://wa.me/XXXXXXXX?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20las%20clases%20de%20portugu%C3%A9s";
-
 const icons = [MessageCircle, BarChart3, Rocket];
 
-export default function HowItWorksSection() {
+interface Props { onCtaClick: () => void; }
+
+export default function HowItWorksSection({ onCtaClick }: Props) {
   const { lang, t } = useLang();
 
   return (
@@ -15,7 +15,6 @@ export default function HowItWorksSection() {
         <h2 className="font-display font-800 text-3xl md:text-4xl text-center text-foreground mb-12">
           {t.howItWorks.title[lang]}
         </h2>
-
         <div className="space-y-10">
           {t.howItWorks.steps.map((step, i) => {
             const Icon = icons[i];
@@ -47,17 +46,14 @@ export default function HowItWorksSection() {
             );
           })}
         </div>
-
         <div className="text-center mt-10">
-          <a
-            href={WHATSAPP_URL}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            onClick={onCtaClick}
             className="inline-block px-8 py-3 rounded-full font-display font-bold text-base text-accent-foreground transition-transform hover:scale-105"
             style={{ background: "var(--cta-gradient)" }}
           >
             {lang === "es" ? "Empezar ahora" : "Start now"}
-          </a>
+          </button>
         </div>
       </div>
     </section>

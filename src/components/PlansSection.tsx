@@ -2,9 +2,9 @@ import { useLang } from "@/contexts/LanguageContext";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 
-const WHATSAPP_URL = "https://wa.me/XXXXXXXX?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20las%20clases%20de%20portugu%C3%A9s";
+interface Props { onCtaClick: () => void; }
 
-export default function PlansSection() {
+export default function PlansSection({ onCtaClick }: Props) {
   const { lang, t } = useLang();
 
   return (
@@ -48,11 +48,9 @@ export default function PlansSection() {
                   <Check size={16} className="text-primary" /> {plan.freq[lang]}
                 </li>
               </ul>
-              <a
-                href={WHATSAPP_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`block mt-6 text-center py-3 rounded-full font-bold text-sm transition-transform hover:scale-105 ${
+              <button
+                onClick={onCtaClick}
+                className={`block w-full mt-6 text-center py-3 rounded-full font-bold text-sm transition-transform hover:scale-105 ${
                   (plan as any).popular
                     ? "text-accent-foreground"
                     : "bg-primary text-primary-foreground"
@@ -60,7 +58,7 @@ export default function PlansSection() {
                 style={(plan as any).popular ? { background: "var(--cta-gradient)" } : undefined}
               >
                 {t.plans.cta[lang]}
-              </a>
+              </button>
             </motion.div>
           ))}
         </div>
