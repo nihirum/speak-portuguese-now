@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const WEBHOOK_URL = "https://hook.us2.make.com/nhs0phk6efpoy302rjl4bmh3zu7t3jso";
+const WEBHOOK_URL = "https://hook.us2.make.com/fq3tl5fcqhcl329smj26ptznaiiwh36n";
 
 const COUNTRY_CODES = [
   { code: "+1", label: "🇺🇸 +1" },
@@ -52,8 +52,7 @@ export default function RegistrationModal({ open, onClose }: Props) {
     try {
       await fetch(WEBHOOK_URL, {
         method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           firstName,
           lastName,
