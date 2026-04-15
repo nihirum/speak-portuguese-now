@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import logo from "@/assets/logo-ptaulas.png";
 
 export default function Login() {
-  const { signIn } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
