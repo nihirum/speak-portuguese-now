@@ -16,7 +16,7 @@ export default function Login() {
     try {
       console.log("[Login] Attempting sign in...");
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      console.log("[Login] Response:", { session: !!data?.session, error });
+      console.log("[Login] signInWithPassword response:", JSON.stringify({ data, error }, null, 2));
 
       if (error) {
         console.error("[Login] Error:", error.message);
@@ -24,11 +24,21 @@ export default function Login() {
         return;
       }
 
-      if (data.session) {
-        console.log("[Login] Session obtained, redirecting...");
-        navigate("/dashboard");
+      // Explicitly fetch session after sign-in
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      console.log("[Login] getSession result:", JSON.stringify({ session: !!sessionData?.session, sessionError }, null, 2));
+
+      if (sessionError) {
+        console.error("[Login] getSession error:", sessionError.message);
+        toast.error("Error al obtener la sesión. Intenta de nuevo.");
+        return;
+      }
+
+      if (sessionData?.session) {
+        console.log("[Login] Valid session confirmed, redirecting to /dashboard...");
+        navigate("/dashboard", { replace: true });
       } else {
-        console.warn("[Login] No session returned");
+        console.warn("[Login] No session after getSession()");
         toast.error("No se pudo establecer la sesión. Intenta de nuevo.");
       }
     } catch (err) {
