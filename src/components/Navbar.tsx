@@ -41,6 +41,9 @@ export default function Navbar({ onCtaClick }: Props) {
           <button onClick={onCtaClick} className="bg-primary text-primary-foreground px-5 py-2 rounded-full text-sm font-bold hover:opacity-90 transition-opacity">
             {t.hero.cta[lang]}
           </button>
+          <a href="/login" className="text-sm font-medium text-primary border border-primary px-4 py-2 rounded-full hover:bg-primary/10 transition-colors">
+            Acceso Alumno
+          </a>
         </div>
 
         <button className="md:hidden text-foreground" onClick={() => setOpen(!open)}>
@@ -58,6 +61,9 @@ export default function Navbar({ onCtaClick }: Props) {
           <button onClick={() => { setOpen(false); onCtaClick(); }} className="block w-full bg-primary text-primary-foreground text-center px-5 py-2 rounded-full text-sm font-bold">
             {t.hero.cta[lang]}
           </button>
+          <a href="/login" onClick={() => setOpen(false)} className="block w-full text-center text-sm font-medium text-primary border border-primary px-4 py-2 rounded-full hover:bg-primary/10 transition-colors">
+            Acceso Alumno
+          </a>
         </div>
       )}
     </nav>
