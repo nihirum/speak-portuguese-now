@@ -1,48 +1,59 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Course = Tables<"courses">;
-type Module = Tables<"modules"> & { lessons: (Tables<"lessons"> & { completed: boolean })[] };
+type Lesson = Tables<"lessons"> & { completed: boolean };
+type Module = Tables<"modules"> & { lessons: Lesson[] };
 
 export function useCourseData() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [courses, setCourses] = useState<Course[]>([]);
   const [modules, setModules] = useState<Module[]>([]);
   const [loading, setLoading] = useState(true);
   const [completedLessons, setCompletedLessons] = useState<Set<string>>(new Set());
 
-  const fetchData = async () => {
-    if (!user) return;
+  const fetchData = useCallback(async () => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
 
-    const [coursesRes, modulesRes, lessonsRes, progressRes] = await Promise.all([
-      supabase.from("courses").select("*"),
-      supabase.from("modules").select("*").order("order"),
-      supabase.from("lessons").select("*").order("order"),
-      supabase.from("progress").select("*").eq("user_id", user.id).eq("completed", true),
-    ]);
+    try {
+      const [coursesRes, modulesRes, lessonsRes, progressRes] = await Promise.all([
+        supabase.from("courses").select("*"),
+        supabase.from("modules").select("*").order("order"),
+        supabase.from("lessons").select("*").order("order"),
+        supabase.from("progress").select("*").eq("user_id", user.id).eq("completed", true),
+      ]);
 
-    const completedSet = new Set(
-      (progressRes.data ?? []).map((p) => p.lesson_id)
-    );
-    setCompletedLessons(completedSet);
-    setCourses(coursesRes.data ?? []);
+      const completedSet = new Set(
+        (progressRes.data ?? []).map((p) => p.lesson_id)
+      );
+      setCompletedLessons(completedSet);
+      setCourses(coursesRes.data ?? []);
 
-    const modulesWithLessons: Module[] = (modulesRes.data ?? []).map((mod) => ({
-      ...mod,
-      lessons: (lessonsRes.data ?? [])
-        .filter((l) => l.module_id === mod.id)
-        .map((l) => ({ ...l, completed: completedSet.has(l.id) })),
-    }));
+      const modulesWithLessons: Module[] = (modulesRes.data ?? []).map((mod) => ({
+        ...mod,
+        lessons: (lessonsRes.data ?? [])
+          .filter((l) => l.module_id === mod.id)
+          .map((l) => ({ ...l, completed: completedSet.has(l.id) })),
+      }));
 
-    setModules(modulesWithLessons);
-    setLoading(false);
-  };
+      setModules(modulesWithLessons);
+    } catch (err) {
+      console.error("Error fetching course data:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
 
   useEffect(() => {
+    // Wait for auth to be ready before fetching
+    if (authLoading) return;
     fetchData();
-  }, [user]);
+  }, [user, authLoading, fetchData]);
 
   const totalLessons = modules.reduce((sum, m) => sum + m.lessons.length, 0);
   const completedCount = completedLessons.size;
