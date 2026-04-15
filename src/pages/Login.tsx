@@ -14,13 +14,30 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await signIn(email, password);
-    if (error) {
-      toast.error("Credenciales incorrectas. Verifica tu email y contraseña.");
-    } else {
-      navigate("/dashboard");
+    try {
+      console.log("[Login] Attempting sign in...");
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      console.log("[Login] Response:", { session: !!data?.session, error });
+
+      if (error) {
+        console.error("[Login] Error:", error.message);
+        toast.error("Credenciales incorrectas. Verifica tu email y contraseña.");
+        return;
+      }
+
+      if (data.session) {
+        console.log("[Login] Session obtained, redirecting...");
+        navigate("/dashboard");
+      } else {
+        console.warn("[Login] No session returned");
+        toast.error("No se pudo establecer la sesión. Intenta de nuevo.");
+      }
+    } catch (err) {
+      console.error("[Login] Unexpected error:", err);
+      toast.error("Error inesperado. Intenta de nuevo.");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
