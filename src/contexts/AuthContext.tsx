@@ -19,40 +19,75 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
 
-  const checkAdmin = async (userId: string) => {
-    const { data } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", userId)
-      .eq("role", "admin")
-      .maybeSingle();
-    setIsAdmin(!!data);
-  };
-
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        if (session?.user) {
-          await checkAdmin(session.user.id);
-        } else {
-          setIsAdmin(false);
-        }
-        setLoading(false);
-      }
-    );
+    let isMounted = true;
 
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        await checkAdmin(session.user.id);
+    const checkAdmin = async (userId: string) => {
+      console.log("[Auth] Checking admin role for:", userId);
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userId)
+        .eq("role", "admin")
+        .maybeSingle();
+
+      if (!isMounted) return;
+
+      if (error) {
+        console.error("[Auth] checkAdmin error:", error);
+        setIsAdmin(false);
+        return;
       }
+
+      setIsAdmin(!!data);
+    };
+
+    const applySession = (nextSession: Session | null) => {
+      if (!isMounted) return;
+
+      console.log("[Auth] Applying session:", {
+        hasSession: !!nextSession,
+        userId: nextSession?.user?.id ?? null,
+      });
+
+      setSession(nextSession);
+      setUser(nextSession?.user ?? null);
       setLoading(false);
+
+      if (nextSession?.user) {
+        setIsAdmin(false);
+        void checkAdmin(nextSession.user.id);
+      } else {
+        setIsAdmin(false);
+      }
+    };
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, nextSession) => {
+      console.log("[Auth] onAuthStateChange:", event, {
+        hasSession: !!nextSession,
+      });
+      applySession(nextSession);
     });
 
-    return () => subscription.unsubscribe();
+    void supabase.auth.getSession().then(({ data, error }) => {
+      console.log("[Auth] Initial getSession:", {
+        hasSession: !!data.session,
+        error,
+      });
+
+      if (error) {
+        console.error("[Auth] getSession error:", error);
+      }
+
+      applySession(data.session ?? null);
+    });
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signIn = async (email: string, password: string) => {

@@ -16,11 +16,18 @@ export function useCourseData() {
 
   const fetchData = useCallback(async () => {
     if (!user) {
+      setCourses([]);
+      setModules([]);
+      setCompletedLessons(new Set());
       setLoading(false);
       return;
     }
 
+    setLoading(true);
+
     try {
+      console.log("[CourseData] Fetching dashboard data for user:", user.id);
+
       const [coursesRes, modulesRes, lessonsRes, progressRes] = await Promise.all([
         supabase.from("courses").select("*"),
         supabase.from("modules").select("*").order("order"),
@@ -28,34 +35,54 @@ export function useCourseData() {
         supabase.from("progress").select("*").eq("user_id", user.id).eq("completed", true),
       ]);
 
-      const completedSet = new Set(
-        (progressRes.data ?? []).map((p) => p.lesson_id)
-      );
+      if (coursesRes.error || modulesRes.error || lessonsRes.error || progressRes.error) {
+        console.error("[CourseData] Query errors:", {
+          coursesError: coursesRes.error,
+          modulesError: modulesRes.error,
+          lessonsError: lessonsRes.error,
+          progressError: progressRes.error,
+        });
+        setCourses([]);
+        setModules([]);
+        setCompletedLessons(new Set());
+        return;
+      }
+
+      const completedSet = new Set((progressRes.data ?? []).map((p) => p.lesson_id));
       setCompletedLessons(completedSet);
       setCourses(coursesRes.data ?? []);
 
       const modulesWithLessons: Module[] = (modulesRes.data ?? []).map((mod) => ({
         ...mod,
         lessons: (lessonsRes.data ?? [])
-          .filter((l) => l.module_id === mod.id)
-          .map((l) => ({ ...l, completed: completedSet.has(l.id) })),
+          .filter((lesson) => lesson.module_id === mod.id)
+          .map((lesson) => ({ ...lesson, completed: completedSet.has(lesson.id) })),
       }));
+
+      console.log("[CourseData] Data loaded:", {
+        courses: coursesRes.data?.length ?? 0,
+        modules: modulesWithLessons.length,
+        lessons: lessonsRes.data?.length ?? 0,
+        completed: completedSet.size,
+      });
 
       setModules(modulesWithLessons);
     } catch (err) {
-      console.error("Error fetching course data:", err);
+      console.error("[CourseData] Unexpected fetch error:", err);
+      setCourses([]);
+      setModules([]);
+      setCompletedLessons(new Set());
     } finally {
       setLoading(false);
     }
   }, [user]);
 
   useEffect(() => {
-    // Wait for auth to be ready before fetching
     if (authLoading) return;
-    fetchData();
-  }, [user, authLoading, fetchData]);
+    void fetchData();
+  }, [authLoading, fetchData]);
 
-  const totalLessons = modules.reduce((sum, m) => sum + m.lessons.length, 0);
+  const totalLessons = modules.reduce((sum, module) => sum + module.lessons.length, 0);
   const completedCount = completedLessons.size;
   const progressPercent = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
 
