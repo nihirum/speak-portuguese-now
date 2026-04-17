@@ -15,9 +15,10 @@ export default function Dashboard() {
   const { user, signOut, isAdmin } = useAuth();
   const navigate = useNavigate();
   const {
-    modules, loading, progressPercent, completedCount, totalLessons,
+    courses, modules, loading, progressPercent, completedCount, totalLessons,
     toggleLesson, completedLessons,
   } = useCourseData();
+  const firstCourseId = courses[0]?.id ?? null;
 
   const [activeLesson, setActiveLesson] = useState<Lesson | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -126,11 +127,14 @@ export default function Dashboard() {
             <div className="p-4 space-y-4">
               <ProgressBar percent={progressPercent} completed={completedCount} total={totalLessons} />
 
-              {progressPercent === 100 && (
-                <div className="flex items-center gap-2 bg-primary/10 text-primary rounded-lg p-3">
+              {progressPercent === 100 && firstCourseId && (
+                <button
+                  onClick={() => navigate(`/certificate?course=${firstCourseId}`)}
+                  className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground rounded-lg p-3 font-bold text-sm hover:opacity-90 transition-opacity"
+                >
                   <GraduationCap size={18} />
-                  <span className="text-sm font-bold">¡Curso completado!</span>
-                </div>
+                  Generar certificado
+                </button>
               )}
 
               <LmsSidebar
