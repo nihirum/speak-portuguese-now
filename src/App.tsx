@@ -5,9 +5,11 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import AdminRoute from "@/components/AdminRoute";
 import Index from "./pages/Index.tsx";
 import Login from "./pages/Login.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
+import Admin from "./pages/Admin.tsx";
 import Certificate from "./pages/Certificate.tsx";
 import Verify from "./pages/Verify.tsx";
 import NotFound from "./pages/NotFound.tsx";
@@ -38,6 +40,14 @@ const App = () => (
                 <ProtectedRoute>
                   <Certificate />
                 </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <AdminRoute>
+                  <Admin />
+                </AdminRoute>
               }
             />
             <Route path="/verify/:id" element={<Verify />} />
