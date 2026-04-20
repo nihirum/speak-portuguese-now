@@ -3,15 +3,16 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAdminData } from "@/hooks/useAdminData";
 import { useAdminStudents } from "@/hooks/useAdminStudents";
-import { ArrowLeft, BookOpen, Users, Plus, ChevronDown, ChevronRight, Trash2, Check, X, Pencil } from "lucide-react";
+import { ArrowLeft, BookOpen, Users, Plus, ChevronDown, ChevronRight, Trash2, Check, X, Pencil, BarChart3 } from "lucide-react";
 import logo from "@/assets/logo-ptaulas.png";
+import MetricsPanel from "@/components/admin/MetricsPanel";
 
-type Tab = "content" | "students";
+type Tab = "metrics" | "content" | "students";
 
 export default function Admin() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [tab, setTab] = useState<Tab>("content");
+  const [tab, setTab] = useState<Tab>("metrics");
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -28,7 +29,8 @@ export default function Admin() {
           </div>
           <span className="text-xs text-muted-foreground hidden sm:block">{user?.email}</span>
         </div>
-        <div className="flex border-t border-border px-4 gap-1">
+        <div className="flex border-t border-border px-4 gap-1 overflow-x-auto">
+          <TabBtn active={tab === "metrics"} onClick={() => setTab("metrics")} icon={<BarChart3 size={14} />} label="Métricas" />
           <TabBtn active={tab === "content"} onClick={() => setTab("content")} icon={<BookOpen size={14} />} label="Contenido" />
           <TabBtn active={tab === "students"} onClick={() => setTab("students")} icon={<Users size={14} />} label="Alumnos" />
         </div>
@@ -36,7 +38,9 @@ export default function Admin() {
 
       <main className="flex-1 overflow-y-auto">
         <div className="max-w-5xl mx-auto p-4 md:p-8">
-          {tab === "content" ? <ContentPanel /> : <StudentsPanel />}
+          {tab === "metrics" && <MetricsPanel />}
+          {tab === "content" && <ContentPanel />}
+          {tab === "students" && <StudentsPanel />}
         </div>
       </main>
     </div>
