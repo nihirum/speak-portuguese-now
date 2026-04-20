@@ -163,12 +163,83 @@ export default function Dashboard() {
                   isCompleted={completedLessons.has(activeLesson.id)}
                 />
               ) : (
-                <div className="flex items-center justify-center h-full min-h-[400px]">
-                  <div className="text-center space-y-3">
-                    <BookOpen className="mx-auto text-muted-foreground" size={40} />
-                    <p className="text-muted-foreground font-medium">
-                      Selecciona una lección del menú para comenzar
+                <div className="space-y-6">
+                  <div>
+                    <h1 className="font-display font-bold text-2xl text-foreground">
+                      Tu progreso
+                    </h1>
+                    <p className="text-muted-foreground text-sm mt-1">
+                      {completedCount} de {totalLessons} lecciones completadas · {progressPercent}%
                     </p>
+                  </div>
+
+                  <div className="space-y-3">
+                    {modules.map((mod, mi) => {
+                      const completedInModule = mod.lessons.filter((l) =>
+                        completedLessons.has(l.id)
+                      ).length;
+                      const total = mod.lessons.length;
+                      const pending = total - completedInModule;
+                      const percent = total > 0 ? Math.round((completedInModule / total) * 100) : 0;
+                      const isComplete = total > 0 && completedInModule === total;
+                      const inProgress = completedInModule > 0 && !isComplete;
+                      const nextLesson = mod.lessons.find((l) => !completedLessons.has(l.id));
+
+                      return (
+                        <button
+                          key={mod.id}
+                          onClick={() => {
+                            const target = nextLesson ?? mod.lessons[0];
+                            if (target) handleSelectLesson(target);
+                          }}
+                          className="w-full text-left bg-card border border-border rounded-xl p-4 hover:border-primary/40 hover:shadow-sm transition-all group"
+                        >
+                          <div className="flex items-start justify-between gap-3 mb-3">
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="text-xs font-medium text-muted-foreground">
+                                  Módulo {mi + 1}
+                                </span>
+                                {isComplete && (
+                                  <span className="text-[10px] font-bold uppercase tracking-wider bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                                    Completado
+                                  </span>
+                                )}
+                                {inProgress && (
+                                  <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded-full">
+                                    En curso
+                                  </span>
+                                )}
+                              </div>
+                              <h3 className="font-semibold text-foreground truncate group-hover:text-primary transition-colors">
+                                {mod.title}
+                              </h3>
+                            </div>
+                            <span className="text-sm font-bold text-foreground shrink-0">
+                              {percent}%
+                            </span>
+                          </div>
+
+                          <div className="h-1.5 bg-muted rounded-full overflow-hidden mb-3">
+                            <div
+                              className="h-full bg-primary rounded-full transition-all duration-500"
+                              style={{ width: `${percent}%` }}
+                            />
+                          </div>
+
+                          <div className="flex items-center justify-between text-xs text-muted-foreground">
+                            <span>
+                              {completedInModule}/{total} completadas · {pending} pendientes
+                            </span>
+                            {nextLesson && (
+                              <span className="text-primary font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                                Continuar →
+                              </span>
+                            )}
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}
