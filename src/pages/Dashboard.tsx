@@ -206,7 +206,7 @@ export default function Dashboard() {
                                   </span>
                                 )}
                                 {inProgress && (
-                                  <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded-full">
+                                  <span className="text-[10px] font-bold uppercase tracking-wider bg-accent text-accent-foreground px-2 py-0.5 rounded-full">
                                     En curso
                                   </span>
                                 )}
