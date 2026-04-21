@@ -54,18 +54,121 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          required_plan: Database["public"]["Enums"]["user_plan"] | null
           title: string
         }
         Insert: {
           created_at?: string
           description?: string | null
           id?: string
+          required_plan?: Database["public"]["Enums"]["user_plan"] | null
           title: string
         }
         Update: {
           created_at?: string
           description?: string | null
           id?: string
+          required_plan?: Database["public"]["Enums"]["user_plan"] | null
+          title?: string
+        }
+        Relationships: []
+      }
+      exam_attempts: {
+        Row: {
+          answers: Json
+          completed_at: string
+          exam_id: string
+          id: string
+          passed: boolean
+          score: number
+          user_id: string
+        }
+        Insert: {
+          answers?: Json
+          completed_at?: string
+          exam_id: string
+          id?: string
+          passed?: boolean
+          score?: number
+          user_id: string
+        }
+        Update: {
+          answers?: Json
+          completed_at?: string
+          exam_id?: string
+          id?: string
+          passed?: boolean
+          score?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_attempts_exam_id_fkey"
+            columns: ["exam_id"]
+            isOneToOne: false
+            referencedRelation: "exams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      exam_questions: {
+        Row: {
+          correct_index: number
+          created_at: string
+          exam_id: string
+          id: string
+          options: Json
+          order: number
+          question: string
+        }
+        Insert: {
+          correct_index?: number
+          created_at?: string
+          exam_id: string
+          id?: string
+          options?: Json
+          order?: number
+          question: string
+        }
+        Update: {
+          correct_index?: number
+          created_at?: string
+          exam_id?: string
+          id?: string
+          options?: Json
+          order?: number
+          question?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_questions_exam_id_fkey"
+            columns: ["exam_id"]
+            isOneToOne: false
+            referencedRelation: "exams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      exams: {
+        Row: {
+          created_at: string
+          id: string
+          module_id: string
+          passing_score: number
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          module_id: string
+          passing_score?: number
+          title?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          module_id?: string
+          passing_score?: number
           title?: string
         }
         Relationships: []
@@ -196,6 +299,27 @@ export type Database = {
           },
         ]
       }
+      user_plans: {
+        Row: {
+          assigned_at: string
+          assigned_by: string | null
+          plan: Database["public"]["Enums"]["user_plan"]
+          user_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by?: string | null
+          plan: Database["public"]["Enums"]["user_plan"]
+          user_id: string
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: string | null
+          plan?: Database["public"]["Enums"]["user_plan"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
@@ -229,6 +353,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "student"
+      user_plan: "basico" | "pro" | "premium"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -357,6 +482,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "student"],
+      user_plan: ["basico", "pro", "premium"],
     },
   },
 } as const

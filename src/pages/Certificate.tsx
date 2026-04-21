@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ArrowLeft, Download, Loader2 } from "lucide-react";
+import { ArrowLeft, Download, Loader2, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCertificate } from "@/hooks/useCertificate";
@@ -12,7 +12,7 @@ export default function Certificate() {
   const courseId = params.get("course");
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { certificate, issue, loading, issuing } = useCertificate(courseId);
+  const { certificate, issue, loading, issuing, examsPending } = useCertificate(courseId);
   const [studentName, setStudentName] = useState("");
   const [courseTitle, setCourseTitle] = useState("");
   const [downloading, setDownloading] = useState(false);
@@ -30,12 +30,12 @@ export default function Certificate() {
     })();
   }, [user, courseId]);
 
-  // Auto-issue if 100% complete and missing
+  // Auto-issue if 100% complete, no exams pending, and missing
   useEffect(() => {
-    if (!loading && !certificate && courseId && user) {
+    if (!loading && !certificate && courseId && user && examsPending === 0) {
       void issue();
     }
-  }, [loading, certificate, courseId, user, issue]);
+  }, [loading, certificate, courseId, user, issue, examsPending]);
 
   const handleDownload = async () => {
     if (!certRef.current || !certificate) return;
@@ -88,7 +88,21 @@ export default function Certificate() {
           )}
         </div>
 
-        {(loading || issuing || !certificate) ? (
+        {!loading && examsPending > 0 && !certificate ? (
+          <div className="bg-card border border-border rounded-xl p-8 text-center space-y-3 max-w-lg mx-auto">
+            <Lock className="mx-auto text-muted-foreground" size={36} />
+            <h2 className="font-display font-bold text-xl">Certificado bloqueado</h2>
+            <p className="text-sm text-muted-foreground">
+              Necesitas aprobar {examsPending} examen{examsPending !== 1 && "es"} más para emitir tu certificado.
+            </p>
+            <button
+              onClick={() => navigate("/dashboard")}
+              className="bg-primary text-primary-foreground rounded-lg px-4 py-2 text-sm font-medium hover:opacity-90"
+            >
+              Ir a los exámenes
+            </button>
+          </div>
+        ) : (loading || issuing || !certificate) ? (
           <div className="flex items-center justify-center py-24">
             <Loader2 className="animate-spin text-primary" size={32} />
           </div>

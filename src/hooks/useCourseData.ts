@@ -1,110 +1,114 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useUserPlan, planAllows } from "@/hooks/useUserPlan";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Course = Tables<"courses">;
 type Lesson = Tables<"lessons"> & { completed: boolean };
-type Module = Tables<"modules"> & { lessons: Lesson[] };
+type Exam = Tables<"exams">;
+type ExamWithStatus = Exam & { passed: boolean };
+export type Module = Tables<"modules"> & {
+  lessons: Lesson[];
+  exam: ExamWithStatus | null;
+};
 
 export function useCourseData() {
   const { user, loading: authLoading } = useAuth();
+  const { plan, loading: planLoading } = useUserPlan();
   const [courses, setCourses] = useState<Course[]>([]);
+  const [lockedCourses, setLockedCourses] = useState<Course[]>([]);
   const [modules, setModules] = useState<Module[]>([]);
   const [loading, setLoading] = useState(true);
   const [completedLessons, setCompletedLessons] = useState<Set<string>>(new Set());
+  const [passedExams, setPassedExams] = useState<Set<string>>(new Set());
 
   const fetchData = useCallback(async () => {
     if (!user) {
-      setCourses([]);
-      setModules([]);
-      setCompletedLessons(new Set());
+      setCourses([]); setLockedCourses([]); setModules([]);
+      setCompletedLessons(new Set()); setPassedExams(new Set());
       setLoading(false);
       return;
     }
 
     setLoading(true);
-
     try {
-      console.log("[CourseData] Fetching dashboard data for user:", user.id);
-
-      const [coursesRes, modulesRes, lessonsRes, progressRes] = await Promise.all([
+      const [coursesRes, modulesRes, lessonsRes, progressRes, examsRes, attemptsRes] = await Promise.all([
         supabase.from("courses").select("*"),
         supabase.from("modules").select("*").order("order"),
         supabase.from("lessons").select("*").order("order"),
         supabase.from("progress").select("*").eq("user_id", user.id).eq("completed", true),
+        supabase.from("exams").select("*"),
+        supabase.from("exam_attempts").select("exam_id, passed").eq("user_id", user.id).eq("passed", true),
       ]);
 
       if (coursesRes.error || modulesRes.error || lessonsRes.error || progressRes.error) {
-        console.error("[CourseData] Query errors:", {
-          coursesError: coursesRes.error,
-          modulesError: modulesRes.error,
-          lessonsError: lessonsRes.error,
-          progressError: progressRes.error,
-        });
-        setCourses([]);
-        setModules([]);
-        setCompletedLessons(new Set());
+        console.error("[CourseData] Query errors", { coursesRes, modulesRes, lessonsRes, progressRes });
+        setLoading(false);
         return;
       }
 
+      const allCourses = coursesRes.data ?? [];
+      const accessibleCourses = allCourses.filter((c) => planAllows(plan, c.required_plan));
+      const locked = allCourses.filter((c) => !planAllows(plan, c.required_plan));
+      const accessibleIds = new Set(accessibleCourses.map((c) => c.id));
+
       const completedSet = new Set((progressRes.data ?? []).map((p) => p.lesson_id));
+      const passedSet = new Set((attemptsRes.data ?? []).map((a) => a.exam_id));
+      const exams = examsRes.data ?? [];
+
+      const modulesWithLessons: Module[] = (modulesRes.data ?? [])
+        .filter((mod) => accessibleIds.has(mod.course_id))
+        .map((mod) => {
+          const exam = exams.find((e) => e.module_id === mod.id) ?? null;
+          return {
+            ...mod,
+            lessons: (lessonsRes.data ?? [])
+              .filter((lesson) => lesson.module_id === mod.id)
+              .map((lesson) => ({ ...lesson, completed: completedSet.has(lesson.id) })),
+            exam: exam ? { ...exam, passed: passedSet.has(exam.id) } : null,
+          };
+        });
+
+      setCourses(accessibleCourses);
+      setLockedCourses(locked);
       setCompletedLessons(completedSet);
-      setCourses(coursesRes.data ?? []);
-
-      const modulesWithLessons: Module[] = (modulesRes.data ?? []).map((mod) => ({
-        ...mod,
-        lessons: (lessonsRes.data ?? [])
-          .filter((lesson) => lesson.module_id === mod.id)
-          .map((lesson) => ({ ...lesson, completed: completedSet.has(lesson.id) })),
-      }));
-
-      console.log("[CourseData] Data loaded:", {
-        courses: coursesRes.data?.length ?? 0,
-        modules: modulesWithLessons.length,
-        lessons: lessonsRes.data?.length ?? 0,
-        completed: completedSet.size,
-      });
-
+      setPassedExams(passedSet);
       setModules(modulesWithLessons);
     } catch (err) {
       console.error("[CourseData] Unexpected fetch error:", err);
-      setCourses([]);
-      setModules([]);
-      setCompletedLessons(new Set());
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, plan]);
 
   useEffect(() => {
-    if (authLoading) return;
+    if (authLoading || planLoading) return;
     void fetchData();
-  }, [authLoading, fetchData]);
+  }, [authLoading, planLoading, fetchData]);
 
-  const totalLessons = modules.reduce((sum, module) => sum + module.lessons.length, 0);
+  const totalLessons = modules.reduce((sum, m) => sum + m.lessons.length, 0);
   const completedCount = completedLessons.size;
   const progressPercent = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
 
   const toggleLesson = async (lessonId: string) => {
     if (!user) return;
     const isCompleted = completedLessons.has(lessonId);
-
     if (isCompleted) {
-      await supabase
-        .from("progress")
-        .update({ completed: false, completed_at: null })
-        .eq("user_id", user.id)
-        .eq("lesson_id", lessonId);
+      await supabase.from("progress").update({ completed: false, completed_at: null })
+        .eq("user_id", user.id).eq("lesson_id", lessonId);
     } else {
       await supabase.from("progress").upsert(
         { user_id: user.id, lesson_id: lessonId, completed: true, completed_at: new Date().toISOString() },
         { onConflict: "user_id,lesson_id" }
       );
     }
-
     await fetchData();
   };
 
-  return { courses, modules, loading, progressPercent, completedCount, totalLessons, toggleLesson, completedLessons };
+  return {
+    courses, lockedCourses, modules, loading, plan,
+    progressPercent, completedCount, totalLessons,
+    toggleLesson, completedLessons, passedExams, refetch: fetchData,
+  };
 }
