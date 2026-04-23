@@ -408,3 +408,76 @@ function StudentsPanel() {
     </div>
   );
 }
+
+function CreateStudentModal({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
+  const [nombre, setNombre] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [plan, setPlan] = useState<UserPlan | "">("");
+  const [loading, setLoading] = useState(false);
+
+  const submit = async () => {
+    if (!email.trim() || password.length < 6) {
+      toast.error("Email y contraseña (mín. 6 caracteres) son obligatorios");
+      return;
+    }
+    setLoading(true);
+    const { data, error } = await supabase.functions.invoke("admin-create-user", {
+      body: {
+        email: email.trim(),
+        password,
+        nombre: nombre.trim(),
+        plan: plan || null,
+      },
+    });
+    setLoading(false);
+    if (error || (data as any)?.error) {
+      toast.error((data as any)?.error ?? error?.message ?? "Error creando alumno");
+      return;
+    }
+    toast.success("Alumno creado");
+    onCreated();
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
+      <div className="bg-card border border-border rounded-xl p-6 w-full max-w-md space-y-4" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between">
+          <h2 className="font-display font-bold text-lg">Nuevo alumno</h2>
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground"><X size={18} /></button>
+        </div>
+        <div className="space-y-3">
+          <Field label="Nombre">
+            <input value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm" placeholder="Juan Pérez" />
+          </Field>
+          <Field label="Email *">
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm" placeholder="alumno@correo.com" />
+          </Field>
+          <Field label="Contraseña * (mín. 6)">
+            <input type="text" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm" placeholder="contraseña inicial" />
+          </Field>
+          <Field label="Plan">
+            <select value={plan} onChange={(e) => setPlan(e.target.value as UserPlan | "")} className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm">
+              {PLAN_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+            </select>
+          </Field>
+        </div>
+        <div className="flex justify-end gap-2 pt-2">
+          <button onClick={onClose} className="px-4 py-2 text-sm rounded-lg border border-border hover:bg-background">Cancelar</button>
+          <button onClick={submit} disabled={loading} className="px-4 py-2 text-sm rounded-lg bg-primary text-primary-foreground font-medium flex items-center gap-2 hover:opacity-90 disabled:opacity-50">
+            {loading && <Loader2 size={14} className="animate-spin" />} Crear alumno
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <label className="block">
+      <span className="text-xs text-muted-foreground mb-1 block">{label}</span>
+      {children}
+    </label>
+  );
+}
