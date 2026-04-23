@@ -194,6 +194,18 @@ function ModuleRow({ module: m, moduleNumber, expanded, onToggle, onUpdate, onDe
         </button>
         <span className="text-xs text-muted-foreground font-mono">M{moduleNumber}</span>
         <EditableText value={m.title} onSave={(v: string) => onUpdate({ title: v })} className="flex-1 text-sm font-medium" />
+        <select
+          value={m.required_plan ?? ""}
+          onChange={(e) => onUpdate({ required_plan: e.target.value || null })}
+          onClick={(e) => e.stopPropagation()}
+          className="bg-background border border-border rounded px-2 py-1 text-xs"
+          title="Plan requerido para este módulo"
+        >
+          <option value="">Igual al curso</option>
+          <option value="basico">Plan Básico</option>
+          <option value="pro">Plan Pro</option>
+          <option value="premium">Plan Premium</option>
+        </select>
         <button onClick={onDelete} className="text-muted-foreground hover:text-destructive">
           <Trash2 size={12} />
         </button>
