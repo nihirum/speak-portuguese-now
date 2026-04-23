@@ -4,7 +4,12 @@ import type { Tables } from "@/integrations/supabase/types";
 
 type Lesson = Tables<"lessons"> & { completed: boolean };
 type Exam = Tables<"exams"> & { passed: boolean };
-type Module = Tables<"modules"> & { lessons: Lesson[]; exam: Exam | null };
+type Module = Tables<"modules"> & {
+  lessons: Lesson[];
+  exam: Exam | null;
+  locked?: boolean;
+  lockReason?: "plan" | "exam" | null;
+};
 
 interface Props {
   modules: Module[];
