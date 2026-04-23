@@ -59,19 +59,25 @@ export default function LmsSidebar({
               {expanded ? <ChevronDown size={16} className="text-muted-foreground shrink-0" />
                 : <ChevronRight size={16} className="text-muted-foreground shrink-0" />}
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-foreground truncate">
+                <p className={`text-sm font-semibold truncate ${mod.locked ? "text-muted-foreground" : "text-foreground"}`}>
                   {mi + 1}. {mod.title}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {completedInModule}/{totalInModule} lecciones
+                  {mod.locked
+                    ? mod.lockReason === "plan"
+                      ? "Requiere plan superior"
+                      : "Aprueba el examen anterior"
+                    : `${completedInModule}/${totalInModule} lecciones`}
                 </p>
               </div>
-              {allLessonsDone && (!mod.exam || mod.exam.passed) && (
+              {mod.locked ? (
+                <Lock size={16} className="text-muted-foreground shrink-0" />
+              ) : allLessonsDone && (!mod.exam || mod.exam.passed) ? (
                 <CheckCircle2 size={16} className="text-primary shrink-0" />
-              )}
+              ) : null}
             </button>
 
-            {expanded && (
+            {expanded && !mod.locked && (
               <div className="ml-4 border-l border-border pl-2 space-y-0.5 pb-1">
                 {mod.lessons.map((lesson, li) => {
                   const isActive = lesson.id === activeLessonId;
