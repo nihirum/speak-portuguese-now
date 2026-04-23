@@ -1,0 +1,1 @@
+ALTER TABLE public.modules ADD COLUMN IF NOT EXISTS required_plan public.user_plan;

@@ -216,30 +216,40 @@ export default function Dashboard() {
                       return (
                         <div
                           key={mod.id}
-                          className="w-full text-left bg-card border border-border rounded-xl p-4 hover:border-primary/40 hover:shadow-sm transition-all group"
+                          className={`w-full text-left bg-card border border-border rounded-xl p-4 transition-all group ${
+                            mod.locked ? "opacity-70" : "hover:border-primary/40 hover:shadow-sm"
+                          }`}
                         >
                           <button
                             onClick={() => {
+                              if (mod.locked) return;
                               const target = nextLesson ?? mod.lessons[0];
                               if (target) handleSelectLesson(target);
                             }}
-                            className="w-full text-left"
+                            disabled={mod.locked}
+                            className="w-full text-left disabled:cursor-not-allowed"
                           >
                             <div className="flex items-start justify-between gap-3 mb-3">
                               <div className="min-w-0 flex-1">
                                 <div className="flex items-center gap-2 mb-1 flex-wrap">
                                   <span className="text-xs font-medium text-muted-foreground">Módulo {mi + 1}</span>
-                                  {isComplete && (
+                                  {mod.locked && (
+                                    <span className="text-[10px] font-bold uppercase tracking-wider bg-muted text-muted-foreground px-2 py-0.5 rounded-full flex items-center gap-1">
+                                      <Lock size={10} />
+                                      {mod.lockReason === "plan" ? "Plan superior" : "Bloqueado"}
+                                    </span>
+                                  )}
+                                  {!mod.locked && isComplete && (
                                     <span className="text-[10px] font-bold uppercase tracking-wider bg-primary/10 text-primary px-2 py-0.5 rounded-full">
                                       Completado
                                     </span>
                                   )}
-                                  {inProgress && (
+                                  {!mod.locked && inProgress && (
                                     <span className="text-[10px] font-bold uppercase tracking-wider bg-accent text-accent-foreground px-2 py-0.5 rounded-full">
                                       En curso
                                     </span>
                                   )}
-                                  {mod.exam && examPassed && (
+                                  {!mod.locked && mod.exam && examPassed && (
                                     <span className="text-[10px] font-bold uppercase tracking-wider bg-primary/10 text-primary px-2 py-0.5 rounded-full">
                                       Examen ✓
                                     </span>
@@ -248,6 +258,13 @@ export default function Dashboard() {
                                 <h3 className="font-semibold text-foreground truncate group-hover:text-primary transition-colors">
                                   {mod.title}
                                 </h3>
+                                {mod.locked && (
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    {mod.lockReason === "plan"
+                                      ? "Este módulo requiere un plan superior."
+                                      : "Aprueba el examen del módulo anterior para continuar."}
+                                  </p>
+                                )}
                               </div>
                               <span className="text-sm font-bold text-foreground shrink-0">{percent}%</span>
                             </div>
@@ -258,7 +275,7 @@ export default function Dashboard() {
 
                             <div className="flex items-center justify-between text-xs text-muted-foreground">
                               <span>{completedInModule}/{total} completadas · {pending} pendientes</span>
-                              {nextLesson && (
+                              {!mod.locked && nextLesson && (
                                 <span className="text-primary font-medium opacity-0 group-hover:opacity-100 transition-opacity">
                                   Continuar →
                                 </span>
@@ -266,7 +283,7 @@ export default function Dashboard() {
                             </div>
                           </button>
 
-                          {mod.exam && (
+                          {mod.exam && !mod.locked && (
                             <button
                               onClick={() => examUnlocked && handleSelectExam(mod.exam!, mod.title, mi + 1)}
                               disabled={!examUnlocked}
