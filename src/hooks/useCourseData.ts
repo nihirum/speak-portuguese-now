@@ -59,18 +59,40 @@ export function useCourseData() {
       const passedSet = new Set((attemptsRes.data ?? []).map((a) => a.exam_id));
       const exams = examsRes.data ?? [];
 
-      const modulesWithLessons: Module[] = (modulesRes.data ?? [])
-        .filter((mod) => accessibleIds.has(mod.course_id))
-        .map((mod) => {
+      const allModulesRaw = (modulesRes.data ?? [])
+        .filter((mod) => accessibleIds.has(mod.course_id));
+
+      // Group modules by course preserving order, compute lock from previous module's exam
+      const byCourse = new Map<string, typeof allModulesRaw>();
+      for (const mod of allModulesRaw) {
+        const arr = byCourse.get(mod.course_id) ?? [];
+        arr.push(mod);
+        byCourse.set(mod.course_id, arr);
+      }
+
+      const modulesWithLessons: Module[] = [];
+      for (const [, mods] of byCourse) {
+        let prevExamPassed = true;
+        let prevExamExisted = false;
+        for (const mod of mods) {
           const exam = exams.find((e) => e.module_id === mod.id) ?? null;
-          return {
+          const planLocked = !planAllows(plan, mod.required_plan);
+          const examLocked = prevExamExisted && !prevExamPassed;
+          modulesWithLessons.push({
             ...mod,
             lessons: (lessonsRes.data ?? [])
               .filter((lesson) => lesson.module_id === mod.id)
               .map((lesson) => ({ ...lesson, completed: completedSet.has(lesson.id) })),
             exam: exam ? { ...exam, passed: passedSet.has(exam.id) } : null,
-          };
-        });
+            locked: planLocked || examLocked,
+            lockReason: planLocked ? "plan" : examLocked ? "exam" : null,
+          });
+          if (exam) {
+            prevExamExisted = true;
+            prevExamPassed = passedSet.has(exam.id);
+          }
+        }
+      }
 
       setCourses(accessibleCourses);
       setLockedCourses(locked);
