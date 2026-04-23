@@ -3,7 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAdminData } from "@/hooks/useAdminData";
 import { useAdminStudents, type UserPlan } from "@/hooks/useAdminStudents";
-import { ArrowLeft, BookOpen, Users, Plus, ChevronDown, ChevronRight, Trash2, Check, X, Pencil, BarChart3 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { ArrowLeft, BookOpen, Users, Plus, ChevronDown, ChevronRight, Trash2, Check, X, Pencil, BarChart3, UserPlus, Loader2 } from "lucide-react";
 import logo from "@/assets/logo-ptaulas.png";
 import MetricsPanel from "@/components/admin/MetricsPanel";
 import ExamEditor from "@/components/admin/ExamEditor";
@@ -319,17 +321,33 @@ function AddInline({ placeholder, onAdd, small }: { placeholder: string; onAdd: 
 
 function StudentsPanel() {
   const { user } = useAuth();
-  const { students, loading, setPlan } = useAdminStudents();
+  const { students, loading, setPlan, refetch } = useAdminStudents();
+  const [showCreate, setShowCreate] = useState(false);
   if (loading) return <div className="text-sm text-muted-foreground">Cargando alumnos...</div>;
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-display font-bold text-2xl text-foreground">Alumnos</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          {students.length} alumno{students.length !== 1 && "s"} registrado{students.length !== 1 && "s"}.
-        </p>
+      <div className="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <h1 className="font-display font-bold text-2xl text-foreground">Alumnos</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {students.length} alumno{students.length !== 1 && "s"} registrado{students.length !== 1 && "s"}.
+          </p>
+        </div>
+        <button
+          onClick={() => setShowCreate(true)}
+          className="bg-primary text-primary-foreground rounded-lg px-4 py-2 text-sm font-medium flex items-center gap-2 hover:opacity-90"
+        >
+          <UserPlus size={14} /> Añadir alumno
+        </button>
       </div>
+
+      {showCreate && (
+        <CreateStudentModal
+          onClose={() => setShowCreate(false)}
+          onCreated={() => { setShowCreate(false); void refetch(); }}
+        />
+      )}
 
       {students.length === 0 ? (
         <div className="text-center py-12 text-sm text-muted-foreground">Aún no hay alumnos.</div>
