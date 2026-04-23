@@ -42,22 +42,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsAdmin(!!data);
     };
 
+    let lastUserId: string | null = null;
+    let adminCheckedFor: string | null = null;
+
     const applySession = (nextSession: Session | null) => {
       if (!isMounted) return;
 
-      console.log("[Auth] Applying session:", {
-        hasSession: !!nextSession,
-        userId: nextSession?.user?.id ?? null,
-      });
+      const nextUserId = nextSession?.user?.id ?? null;
+      const userChanged = nextUserId !== lastUserId;
 
-      setSession(nextSession);
-      setUser(nextSession?.user ?? null);
+      // Always update token/session reference silently, but only trigger
+      // re-renders / admin re-check when the actual user identity changes.
+      if (userChanged) {
+        console.log("[Auth] User changed:", { from: lastUserId, to: nextUserId });
+        lastUserId = nextUserId;
+        setSession(nextSession);
+        setUser(nextSession?.user ?? null);
+      } else {
+        // Same user (token refresh, tab refocus): keep refs stable to avoid
+        // unmounting children and losing local UI state.
+        setSession((prev) => (prev?.access_token === nextSession?.access_token ? prev : nextSession));
+      }
+
       setLoading(false);
 
-      if (nextSession?.user) {
-        setIsAdmin(false);
+      if (nextSession?.user && adminCheckedFor !== nextSession.user.id) {
+        adminCheckedFor = nextSession.user.id;
         void checkAdmin(nextSession.user.id);
-      } else {
+      } else if (!nextSession?.user) {
+        adminCheckedFor = null;
         setIsAdmin(false);
       }
     };
