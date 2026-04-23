@@ -11,6 +11,8 @@ type ExamWithStatus = Exam & { passed: boolean };
 export type Module = Tables<"modules"> & {
   lessons: Lesson[];
   exam: ExamWithStatus | null;
+  locked: boolean;
+  lockReason: "plan" | "exam" | null;
 };
 
 export function useCourseData() {
