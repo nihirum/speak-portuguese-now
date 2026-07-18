@@ -1,0 +1,1 @@
+CREATE POLICY "Users can issue their own certificates" ON public.certificates FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
